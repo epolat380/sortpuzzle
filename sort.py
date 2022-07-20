@@ -84,8 +84,8 @@ def remove_color(color, lst):
     i = i + 1
   return lst
 
-def find_color(num_tubes, color, map, state):
-  for i in range(num_tubes):
+def find_color(color, map, state):
+  for i in range(len(map)):
     if map[i][1] == color:
       num = map[i][0]
 
@@ -95,7 +95,7 @@ def find_color(num_tubes, color, map, state):
   return color, num
 
 def modify_state(num_tubes, color, dest, map, state):
-  color, num = find_color(num_tubes, color, map, state)
+  color, num = find_color(color, choose(map), state)
   
   for i in range(num_tubes):
     if map[i][1] == color:
@@ -117,7 +117,7 @@ def modify_state(num_tubes, color, dest, map, state):
   return state
 
 def main():
-  state = [["pb" , "sr" , "kr" , "pb"] , ["sr" , "ys" , "ys" , "kr"] , ["mv", "mv", "mv"] , [ "kr", "ys" , "kr" , "pb"] , ["sr", "ys", "mv" , "mv"] , ["empty"] , ["empty"]]
+  state = [["pb" , "mv" , "kr" , "pb"] , ["sr" , "ys" , "ys" , "kr"] , ["pb", "sr", "sr","kr"] , [ "mv", "ys" , "kr" , "pb"] , ["mv", "mv", "sr" , "ys"] , ["empty"] , ["empty"]]
   size_of_tube = 4
   map = create_map(state)
   color, unit = find_max(choose(map))
