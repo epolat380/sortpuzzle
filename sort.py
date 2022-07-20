@@ -63,10 +63,10 @@ def find_max(lst):
     j = j + 1
   return max_color, occurence
 
-def find_destination(num_tubes, num_colors, color, size, state):
+def find_destination(num_tubes, size_of_tube, color, unit, state):
   for i in range(num_tubes):
     if state[i][0] == color:
-      if (num_colors - len(state[i]) >= size):
+      if (size_of_tube - len(state[i]) >= unit):
         return i
   return state.index(["empty"])
 
@@ -120,8 +120,8 @@ def main():
   state = [["pb" , "sr" , "kr" , "pb"] , ["sr" , "ys" , "ys" , "kr"] , ["mv", "mv", "mv"] , [ "kr", "ys" , "kr" , "pb"] , ["sr", "ys", "mv" , "mv"] , ["empty"] , ["empty"]]
   size_of_tube = 4
   map = create_map(state)
-  color, occurence = find_max(choose(map))
-  dest = find_destination(len(state), size_of_tube, color, occurence, state)
+  color, unit = find_max(choose(map))
+  dest = find_destination(len(state), size_of_tube, color, unit, state)
   result = modify_state(len(state), color, dest, map, state)
   print(result)
 
