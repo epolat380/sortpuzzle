@@ -49,6 +49,7 @@ def choose(map):
   return compress_map(lst)
 
 def find_max(lst):
+  max_color = ""
   occurence = 0
   j = 1
   for i in range(len(lst)):
@@ -56,25 +57,47 @@ def find_max(lst):
       if (lst[i][0] >= lst[j][0]) & (lst[i][0] >= occurence):
         max_color = lst[i][1]
         occurence = lst[i][0]
-      elif (lst[j][0] > lst[i][0]) & (lst[j][0] >= occurence):
+      elif (lst[j][0] >= lst[i][0]) & (lst[j][0] >= occurence):
         max_color = lst[j][1]
         occurence = lst[j][0]
       else:
         continue
-    j = j + 1
+      j = j + 1
+    elif (len(lst) == 1): 
+      max_color = lst[0][1]
+      occurence = lst[0][0]
   return max_color, occurence
 
+def other_possible_paths(num, size_of_tube, color, unit, state):
+  for i in range(num):
+    if state[i][0] == color:
+      n = 0
+      for x in state[i]:
+        if x == color:
+          n = n - 1
+    
+      if ((size_of_tube - len(state[i])) != 0) & ((size_of_tube - len(state[i])) >= (unit + n)):
+        return True
+      else:
+        return False
+    
 def find_destination(num_tubes, size_of_tube, color, unit, state):
-
   for i in range(num_tubes):
     if state[i][0] == color:
       n = 0
       for x in state[i]:
         if x == color:
           n = n - 1
-      
-      if ((size_of_tube - len(state[i])) != 0) & ((size_of_tube - len(state[i])) >= (unit + n)):
-        return i
+
+      if other_possible_paths(len(state[i+1:]), size_of_tube, color, unit, state[i+1:]):
+        find_destination(len(state[i+1:]), size_of_tube, color, unit, state[i+1:])
+      elif ((size_of_tube - len(state[i])) != 0) & ((size_of_tube - len(state[i])) >= (unit + n)):
+        if (unit != (-n)): #efficient çözüm değil!!
+          return i
+        else:
+          return state.index(["empty"])
+      else:
+        continue
   return state.index(["empty"])
 
 def only_color(color, lst):
@@ -93,12 +116,29 @@ def remove_color(color, lst):
     i = i + 1
   return lst
 
+def unique_color(state, color, unit):
+  sum = 0
+
+  for i in range(len(state)):
+    if state[i][0] == color:
+      sum = sum + len(state[i])
+    
+  if (sum <= unit):
+    return True
+  else: 
+    return False
+
 def find_color(map, state):
   new_map = deepcopy(map)
   i = 0
   for _ in map:
     if only_color(map[i][1], state):
       new_map = remove_color(map[i][1], compress_map(new_map))
+    elif (map[i][0] == 4):
+      try:
+        state.index(["empty"])
+      except ValueError:
+        new_map = remove_color(map[i][1], compress_map(new_map))
     i = i + 1
   return find_max(new_map)
 
@@ -127,7 +167,7 @@ def modify_state(num_tubes, map, state, size_of_tube):
   return state
 
 def main():
-  state = [['pb', 'mv', 'kr', 'pb'], ['kr'], ['pb', 'sr', 'sr', 'kr'], ['kr', 'pb'], ['sr', 'sr', 'yş'], ['mv', 'mv', 'mv'], ['yş', 'yş', 'yş']]
+  state = [['pb'], ['kr', 'kr', 'kr'], ['sr', 'sr', 'kr'], ['pb', 'pb', 'pb'], ['sr', 'sr', 'yş'], ['mv', 'mv', 'mv', 'mv'], ['yş', 'yş', 'yş']]
   size_of_tube = 4
   map = create_map(state)
   result = modify_state(len(state), map, state, size_of_tube)
