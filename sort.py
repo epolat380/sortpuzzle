@@ -1,7 +1,3 @@
-# c = number of colors / number of containers that are initially full
-# n = number of containers initially empty
-# capacity for each tube = 4
-
 from copy import deepcopy
 
 def count_first(cont):
@@ -100,13 +96,16 @@ def find_destination(num_tubes, size_of_tube, color, unit, state):
         continue
   return state.index(["empty"])
 
-def only_color(color, lst):
-  for x in lst:
+def only_color(color, state):
+  length = []
+  b = []
+  for x in state:
     if x[0] == color:
+      length.append(len(x))
       for y in x:
         if y != color:
-          return False
-  return True
+          b.append(False)
+  return b, length
 
 def remove_color(color, lst):
   i = 0
@@ -116,29 +115,27 @@ def remove_color(color, lst):
     i = i + 1
   return lst
 
-def unique_color(state, color, unit):
+def not_unique_color(state, color, unit):
   sum = 0
-
   for i in range(len(state)):
     if state[i][0] == color:
       sum = sum + len(state[i])
-    
-  if (sum <= unit):
-    return True
-  else: 
-    return False
+  return sum > unit
 
 def find_color(map, state):
   new_map = deepcopy(map)
   i = 0
   for _ in map:
-    if only_color(map[i][1], state):
+    b, length = only_color(map[i][1], state)
+    if ((not b) & (len(length)) == 1) or ((not b) & (min(length) == 4)):
       new_map = remove_color(map[i][1], compress_map(new_map))
-    elif (map[i][0] == 4):
+    elif (not_unique_color(map[i][1], state, map[i][0])):
       try:
         state.index(["empty"])
       except ValueError:
         new_map = remove_color(map[i][1], compress_map(new_map))
+    else:
+      pass
     i = i + 1
   return find_max(new_map)
 
@@ -167,7 +164,7 @@ def modify_state(num_tubes, map, state, size_of_tube):
   return state
 
 def main():
-  state = [['pb'], ['kr', 'kr', 'kr'], ['sr', 'sr', 'kr'], ['pb', 'pb', 'pb'], ['sr', 'sr', 'yş'], ['mv', 'mv', 'mv', 'mv'], ['yş', 'yş', 'yş']]
+  state = [['empty'], ['kr', 'kr', 'kr'], ['sr', 'sr', 'kr'], ['pb', 'pb', 'pb', 'pb'], ['sr', 'sr', 'yş'], ['mv', 'mv', 'mv', 'mv'], ['yş', 'yş', 'yş']]
   size_of_tube = 4
   map = create_map(state)
   result = modify_state(len(state), map, state, size_of_tube)
