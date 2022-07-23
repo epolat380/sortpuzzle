@@ -101,13 +101,17 @@ def find_destination(num_tubes, size_of_tube, color, unit, state):
 def only_color(color, state):
   length = []
   b = []
+  counter = 0
   for x in state:
     if x[0] == color:
+      counter = counter + 1
       length.append(len(x))
+      print(x)
       for y in x:
         if y != color:
           b.append(False)
-  return b, length
+          break
+  return b, length, counter
 
 def remove_color(color, lst):
   i = 0
@@ -131,11 +135,11 @@ def find_color(map, state):
   for _ in map:
     print(map[i][1])
     print(map[i][0])
-    b, length = only_color(map[i][1], state)
+    b, length, counter = only_color(map[i][1], state)
     if ((not b) & (len(length)) == 1) or ((not b) & (min(length) == TUBE_SIZE)):
       print("hey")
       new_map = remove_color(map[i][1], compress_map(new_map))
-    elif (not_unique_color(state, map[i][1], TUBE_SIZE)):
+    elif ((len(b) >= counter) & not_unique_color(state, map[i][1], TUBE_SIZE)):
       print("yey")
       try:
         state.index(["empty"])
