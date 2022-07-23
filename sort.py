@@ -1,5 +1,7 @@
 from copy import deepcopy
 
+TUBE_SIZE = 4
+
 def count_first(cont):
   i = 0
   first = cont[0]
@@ -84,7 +86,7 @@ def find_destination(num_tubes, size_of_tube, color, unit, state):
       for x in state[i]:
         if x == color:
           n = n - 1
-
+      
       if other_possible_paths(len(state[i+1:]), size_of_tube, color, unit, state[i+1:]):
         find_destination(len(state[i+1:]), size_of_tube, color, unit, state[i+1:])
       elif ((size_of_tube - len(state[i])) != 0) & ((size_of_tube - len(state[i])) >= (unit + n)):
@@ -120,21 +122,27 @@ def not_unique_color(state, color, unit):
   for i in range(len(state)):
     if state[i][0] == color:
       sum = sum + len(state[i])
+  print(sum > unit)
   return sum > unit
 
 def find_color(map, state):
   new_map = deepcopy(map)
   i = 0
   for _ in map:
+    print(map[i][1])
+    print(map[i][0])
     b, length = only_color(map[i][1], state)
-    if ((not b) & (len(length)) == 1) or ((not b) & (min(length) == 4)):
+    if ((not b) & (len(length)) == 1) or ((not b) & (min(length) == TUBE_SIZE)):
+      print("hey")
       new_map = remove_color(map[i][1], compress_map(new_map))
-    elif (not_unique_color(map[i][1], state, map[i][0])):
+    elif (not_unique_color(state, map[i][1], TUBE_SIZE)):
+      print("yey")
       try:
         state.index(["empty"])
       except ValueError:
         new_map = remove_color(map[i][1], compress_map(new_map))
     else:
+      print("ney")
       pass
     i = i + 1
   return find_max(new_map)
@@ -142,6 +150,9 @@ def find_color(map, state):
 def modify_state(num_tubes, map, state, size_of_tube):
   new_color, num = find_color(choose(map), state)
   dest = find_destination(len(state), size_of_tube, new_color, num, state)
+
+  print(new_color)
+  print(dest)
 
   for i in range(num_tubes):
     if map[i][1] == new_color:
@@ -157,17 +168,16 @@ def modify_state(num_tubes, map, state, size_of_tube):
 
       if state[dest] == ['empty']:
         state[dest].remove('empty')
-
+  
   for x in range(num):
     state[dest].insert(0, new_color)
-      
+  
   return state
 
 def main():
-  state = [['empty'], ['kr', 'kr', 'kr'], ['sr', 'sr', 'kr'], ['pb', 'pb', 'pb', 'pb'], ['sr', 'sr', 'yş'], ['mv', 'mv', 'mv', 'mv'], ['yş', 'yş', 'yş']]
-  size_of_tube = 4
+  state = [['sr', 'sr', 'sr', 'sr'], ['empty'], ['kr', 'kr', 'kr', 'kr'], ['pb', 'pb', 'pb', 'pb'], ['yş'], ['mv', 'mv', 'mv', 'mv'], ['yş', 'yş', 'yş']]
   map = create_map(state)
-  result = modify_state(len(state), map, state, size_of_tube)
+  result = modify_state(len(state), map, state, TUBE_SIZE)
   print(result)
 
 if __name__ == "__main__":
